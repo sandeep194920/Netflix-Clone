@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import {
   Background,
@@ -13,6 +13,9 @@ import {
   Group,
   Profile,
   DropDown,
+  Search,
+  SearchIcon,
+  SearchInput,
 } from "./styles/header";
 
 // the header background should be dynamic coz when we click on signin, we get a different bg
@@ -70,4 +73,29 @@ Header.Profile = function HeaderProfile({ children, ...restProps }) {
 
 Header.DropDown = function HeaderDropDown({ children, ...restProps }) {
   return <DropDown {...restProps}>{children}</DropDown>;
+};
+
+// search box in profile
+
+Header.Search = function HeaderSearch({
+  searchTerm,
+  setSearchTerm,
+  ...restProps
+}) {
+  const [searchActive, setSearchActive] = useState(false);
+  return (
+    <Search {...restProps}>
+      <SearchIcon
+        onClick={() => setSearchActive((searchActive) => !searchActive)}
+      >
+        <img src="/images/icons/search.png" alt="Search" />
+      </SearchIcon>
+      <SearchInput
+        value={searchTerm}
+        onChange={({ target }) => setSearchTerm(target.value)}
+        placeholder="Search films and series"
+        active={searchActive}
+      />
+    </Search>
+  );
 };

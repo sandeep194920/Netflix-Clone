@@ -10,6 +10,7 @@ export function BrowseContainer({ slides }) {
   const [loading, setLoading] = useState(true);
   const { firebase } = useContext(FirebaseContext);
   const user = firebase.auth().currentUser || {}; // if fb user doesn't exist then it will return empty object
+  const [searchTerm, setSearchTerm] = useState("");
 
   // useEffect is called when display name on the profile changes. That happens when the user clicks the image on his avatar and this onclick happens in profiles.js page
   // when user clicks the image in profile.js, this useEffect sets the display name and when the display name is set, we will render the browse page
@@ -36,6 +37,10 @@ export function BrowseContainer({ slides }) {
                 <Header.TextLink>Films</Header.TextLink>
               </Header.Group>
               <Header.Group>
+                <Header.Search
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
                 <Header.Profile>
                   <Header.Picture src={user.photoURL} />
                   <Header.DropDown>
