@@ -59,6 +59,7 @@ export function BrowseContainer({ slides }) {
                 <Header.TextLink
                   active={category === "series" ? "true" : "false"}
                   onClick={() => setCategory("series")}
+                  leftSpacing
                 >
                   Series
                 </Header.TextLink>

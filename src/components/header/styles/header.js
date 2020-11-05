@@ -99,7 +99,7 @@ export const Link = styled.p`
     margin-right: 0;
   }
   &:first-of-type {
-    margin-left: 150px;
+    ${({ leftSpacing }) => leftSpacing && "margin-left: 150px;"}
   }
 `;
 
