@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { SelectProfileContainer } from "./profiles";
 import { FirebaseContext } from "../context/firebase";
-import { Header, Loading } from "../components";
+import { Header, Loading, Card, Player } from "../components";
 import * as ROUTES from "../constants/routes";
 import logo from "../../src/logo.svg";
+import { FooterContainer } from "../containers/footer";
 
 export function BrowseContainer({ slides }) {
   const [profile, setProfile] = useState({});
@@ -11,6 +12,8 @@ export function BrowseContainer({ slides }) {
   const { firebase } = useContext(FirebaseContext);
   const user = firebase.auth().currentUser || {}; // if fb user doesn't exist then it will return empty object
   const [searchTerm, setSearchTerm] = useState("");
+  const [category, setCategory] = useState("series"); // default in the browse page
+  const [slideRows, setSlideRows] = useState([]); // we need to fetch the data - only which is viewed by user. for example, if user is viewing series then we only need to get series and no need to get films - this is for performance optimization
 
   // useEffect is called when display name on the profile changes. That happens when the user clicks the image on his avatar and this onclick happens in profiles.js page
   // when user clicks the image in profile.js, this useEffect sets the display name and when the display name is set, we will render the browse page
@@ -20,6 +23,11 @@ export function BrowseContainer({ slides }) {
       setLoading(false);
     }, 3000);
   }, [profile.displayName]);
+
+  // get only the data which is viewed by user
+  useEffect(() => {
+    setSlideRows(slides[category]);
+  }, [category, slides]);
 
   // if we have displayName, that means someone clicked the profile and then we show loading container until we take them to the browse page
   return profile.displayName ? (
@@ -33,8 +41,18 @@ export function BrowseContainer({ slides }) {
             <Header.Frame>
               <Header.Group>
                 <Header.Logo to={ROUTES.HOME} alt="Netflix" src={logo} />
-                <Header.TextLink>Series</Header.TextLink>
-                <Header.TextLink>Films</Header.TextLink>
+                <Header.TextLink
+                  active={category === "series" ? "true" : "false"}
+                  onClick={() => setCategory("series")}
+                >
+                  Series
+                </Header.TextLink>
+                <Header.TextLink
+                  onClick={() => setCategory("films")}
+                  active={category === "films" ? "true" : "false"}
+                >
+                  Films
+                </Header.TextLink>
               </Header.Group>
               <Header.Group>
                 <Header.Search
@@ -68,8 +86,36 @@ export function BrowseContainer({ slides }) {
                 the guise he projects in a futile attempt to feel like he's part
                 of the world around him.
               </Header.Text>
+              <Header.PlayButton>Play</Header.PlayButton>
             </Header.Feature>
           </Header>
+          <Card.Group>
+            {slideRows.map((slideItem) => (
+              <Card key={`${category}-${slideItem.title.toLowerCase()}`}>
+                <Card.Title>{slideItem.title} </Card.Title>
+                <Card.Entities>
+                  {slideItem.data.map((item) => (
+                    <Card.Item key={item.docId} item={item}>
+                      <Card.Image
+                        src={`images/${category}/${item.genre}/${item.slug}/small.jpg`}
+                      />
+                      <Card.Meta>
+                        <Card.SubTitle>{item.title}</Card.SubTitle>
+                        <Card.Text>{item.description}</Card.Text>
+                      </Card.Meta>
+                    </Card.Item>
+                  ))}
+                </Card.Entities>
+                <Card.Feature category={category}>
+                  <Player>
+                    <Player.Button />
+                    <Player.Video src="/videos/bunny.mp4" />
+                  </Player>
+                </Card.Feature>
+              </Card>
+            ))}
+          </Card.Group>
+          <FooterContainer />
         </>
       )}
     </>

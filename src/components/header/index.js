@@ -16,6 +16,7 @@ import {
   Search,
   SearchIcon,
   SearchInput,
+  PlayButton,
 } from "./styles/header";
 
 // the header background should be dynamic coz when we click on signin, we get a different bg
@@ -98,4 +99,8 @@ Header.Search = function HeaderSearch({
       />
     </Search>
   );
+};
+
+Header.PlayButton = function HeaderPlayButton({ children, ...restProps }) {
+  return <PlayButton {...restProps}>{children} </PlayButton>;
 };
