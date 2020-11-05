@@ -5,6 +5,7 @@ import { Header, Loading, Card, Player } from "../components";
 import * as ROUTES from "../constants/routes";
 import logo from "../../src/logo.svg";
 import { FooterContainer } from "../containers/footer";
+import Fuse from "fuse.js";
 
 export function BrowseContainer({ slides }) {
   const [profile, setProfile] = useState({});
@@ -28,6 +29,20 @@ export function BrowseContainer({ slides }) {
   useEffect(() => {
     setSlideRows(slides[category]);
   }, [category, slides]);
+
+  // Live search - Fuse basically takes the searchTerm (our search keywords) and searches the slideRows (items to search from) and keys (keywords) and then returns the result object which we set it back to items
+  useEffect(() => {
+    const fuse = new Fuse(slideRows, {
+      keys: ["data.description", "data.title", "data.genre"],
+    });
+    const results = fuse.search(searchTerm).map(({ item }) => item);
+    console.log(results);
+    if (slideRows.length > 0 && searchTerm.length > 3 && results.length > 0) {
+      setSlideRows(results);
+    } else {
+      setSlideRows(slides[category]);
+    }
+  }, [searchTerm, category, slides]);
 
   // if we have displayName, that means someone clicked the profile and then we show loading container until we take them to the browse page
   return profile.displayName ? (
